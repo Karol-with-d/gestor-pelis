@@ -1,6 +1,6 @@
 # Gestor de Películas
 
-Aplicación web para llevar una colección personal de películas. Está hecha en TypeScript con el patrón Modelo-Vista-Controlador y guarda los datos en el navegador.
+Aplicación web para llevar una colección personal de películas.
 
 ## Funcionalidades
 
