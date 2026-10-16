@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Películas</title>
+    <link rel="stylesheet" href="src/styles/styles.css">
+</head>
+<body>
+    <main class="pagina">
+        <h1>Gestor de Películas</h1>
+        <p class="descripcion">Aplicación para gestionar una colección personal de películas.</p>
+
+        <form id="form-pelicula" class="formulario">
+            <label>Título
+                <input id="titulo" type="text" placeholder="Título" maxlength="80" required>
+            </label>
+            <label>Año
+                <input id="anio" type="number" placeholder="Año" min="1888" max="2100" required>
+            </label>
+            <label>Género
+            <select id="genero" required>
+                <option value="">Género</option>
+                <option value="Acción">Acción</option>
+                <option value="Comedia">Comedia</option>
+                <option value="Drama">Drama</option>
+                <option value="Terror">Terror</option>
+                <option value="Ciencia ficción">Ciencia ficción</option>
+                <option value="Romance">Romance</option>
+                <option value="Animación">Animación</option>
+            </select>
+            </label>
+            <label>Calificación
+            <select id="calificacion" required>
+                <option value="">Calificación</option>
+                <option value="1">1 estrella</option>
+                <option value="2">2 estrellas</option>
+                <option value="3">3 estrellas</option>
+                <option value="4">4 estrellas</option>
+                <option value="5">5 estrellas</option>
+            </select>
+            </label>
+            <label class="comentario-campo">Comentario
+                <input id="comentario" type="text" placeholder="Comentario" maxlength="200">
+            </label>
+            <div class="acciones">
+                <button id="btn-guardar" type="submit">Agregar</button>
+                <button id="btn-cancelar" class="secundario" type="button" hidden>Cancelar</button>
+            </div>
+        </form>
+
+        <p id="mensaje"></p>
+
+        <section id="estadisticas" class="estadisticas"></section>
+
+        <div class="filtros">
+            <input id="buscar" type="text" placeholder="Buscar por título o género">
+            <select id="filtro-genero">
+                <option value="">Todos los géneros</option>
+                <option value="Acción">Acción</option>
+                <option value="Comedia">Comedia</option>
+                <option value="Drama">Drama</option>
+                <option value="Terror">Terror</option>
+                <option value="Ciencia ficción">Ciencia ficción</option>
+                <option value="Romance">Romance</option>
+                <option value="Animación">Animación</option>
+            </select>
+            <input id="filtro-anio" type="number" placeholder="Año" min="1888" max="2100">
+            <select id="filtro-estado">
+                <option value="">Todas</option>
+                <option value="vista">Vistas</option>
+                <option value="pendiente">Pendientes</option>
+            </select>
+            <select id="ordenar">
+                <option value="">Ordenar por</option>
+                <option value="titulo">Título</option>
+                <option value="año">Año</option>
+                <option value="calificacion">Calificación</option>
+            </select>
+        </div>
+
+        <section id="lista" class="lista"></section>
+    </main>
+
+    <script type="module" src="dist/main.js"></script>
+</body>
+</html>
