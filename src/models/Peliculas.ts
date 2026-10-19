@@ -3,6 +3,7 @@ export interface Pelicula {
     titulo: string
     año: string
     genero: string
+    directorId: number
     vista: boolean
     calificacion: number
     comentario: string
@@ -12,6 +13,7 @@ export interface DatosPelicula {
     titulo: string
     año: string
     genero: string
+    directorId: number
     calificacion: number
     comentario: string
 }
@@ -27,12 +29,13 @@ export class PeliculaModel {
     private peliculas: Pelicula[] = [];
     private currentId: number = 1;
 
-    public addPelicula(titulo: string, año: string, genero: string, vista: boolean, calificacion: number, comentario: string): Pelicula {
+    public addPelicula(titulo: string, año: string, genero: string, directorId: number, vista: boolean, calificacion: number, comentario: string): Pelicula {
         const newPelicula: Pelicula = {
             id: this.currentId++,
             titulo,
             año,
             genero,
+            directorId,
             vista,
             calificacion,
             comentario
@@ -48,12 +51,13 @@ export class PeliculaModel {
         return this.peliculas.find((pelicula)=> pelicula.id===id);
     }
 
-    public updatePelicula(id: number, titulo: string, año: string, genero: string, calificacion: number, comentario: string): void {
+    public updatePelicula(id: number, titulo: string, año: string, genero: string, directorId: number, calificacion: number, comentario: string): void {
         const pelicula = this.getPeliculaById(id);
         if (pelicula) {
             pelicula.titulo = titulo;
             pelicula.año = año;
             pelicula.genero = genero;
+            pelicula.directorId = directorId;
             pelicula.calificacion = calificacion;
             pelicula.comentario = comentario;
         }
@@ -131,6 +135,7 @@ export class PeliculaModel {
                 titulo: pelicula.titulo,
                 año: pelicula.año,
                 genero: pelicula.genero,
+                directorId: typeof pelicula.directorId === "number" ? pelicula.directorId : 0,
                 vista: pelicula.vista,
                 calificacion: pelicula.calificacion ?? 0,
                 comentario: pelicula.comentario ?? ""

@@ -1,17 +1,21 @@
 export class PeliculaController {
     modelo;
+    directores;
     vista;
     storage;
     idEditando = null;
+    idDirectorEditando = null;
     criterioOrden = "";
-    constructor(modelo, vista, storage) {
+    constructor(modelo, directores, vista, storage) {
         this.modelo = modelo;
+        this.directores = directores;
         this.vista = vista;
         this.storage = storage;
     }
     iniciar() {
         const guardadas = this.storage.obtener();
-        this.modelo.cargarPeliculas(guardadas);
+        this.modelo.cargarPeliculas(guardadas.peliculas);
+        this.directores.cargarDirectores(guardadas.directores);
         this.conectarEventos();
         this.mostrar();
     }
@@ -39,6 +43,20 @@ export class PeliculaController {
             this.vista.limpiarFormulario();
             this.vista.mostrarMensaje("Edición cancelada.", false);
         };
+        this.vista.onGuardarDirector = (nombre, email) => {
+            this.guardarDirector(nombre, email);
+        };
+        this.vista.onEliminarDirector = (id) => {
+            this.eliminarDirector(id);
+        };
+        this.vista.onEditarDirector = (id) => {
+            this.empezarEdicionDirector(id);
+        };
+        this.vista.onCancelarDirector = () => {
+            this.idDirectorEditando = null;
+            this.vista.limpiarFormularioDirector();
+            this.vista.mostrarMensaje("Edición cancelada.", false);
+        };
     }
     guardar(datos) {
         const titulo = datos.titulo.trim();
@@ -46,15 +64,16 @@ export class PeliculaController {
         const genero = datos.genero;
         const comentario = datos.comentario.trim();
         const calificacion = datos.calificacion;
+        const directorId = datos.directorId;
         const anioNumero = Number(año);
-        const error = this.validar(titulo, anioNumero, genero, calificacion);
+        const error = this.validar(titulo, anioNumero, genero, directorId, calificacion);
         if (error !== "") {
             this.vista.mostrarMensaje(error, true);
             return;
         }
-        const limpios = { titulo, año, genero, calificacion, comentario };
+        const limpios = { titulo, año, genero, directorId, calificacion, comentario };
         if (this.idEditando === null) {
-            this.modelo.addPelicula(titulo, año, genero, false, calificacion, comentario);
+            this.modelo.addPelicula(titulo, año, genero, directorId, false, calificacion, comentario);
             this.vista.mostrarMensaje("Película agregada.", false);
             this.guardarYMostrar();
             this.vista.limpiarFormulario();
@@ -62,7 +81,7 @@ export class PeliculaController {
         }
         this.handleUpdate(this.idEditando, limpios);
     }
-    validar(titulo, anioNumero, genero, calificacion) {
+    validar(titulo, anioNumero, genero, directorId, calificacion) {
         if (titulo === "") {
             return "Escribe un título.";
         }
@@ -71,6 +90,9 @@ export class PeliculaController {
         }
         if (genero === "") {
             return "Elige un género.";
+        }
+        if (!this.directores.getDirectorById(directorId)) {
+            return "Elige un director. Si no hay, créalo en la pestaña Directores.";
         }
         if (!Number.isInteger(calificacion) || calificacion < 1 || calificacion > 5) {
             return "La calificación debe ser de 1 a 5.";
@@ -84,7 +106,7 @@ export class PeliculaController {
         return "";
     }
     handleUpdate(id, datos) {
-        this.modelo.updatePelicula(id, datos.titulo, datos.año, datos.genero, datos.calificacion, datos.comentario);
+        this.modelo.updatePelicula(id, datos.titulo, datos.año, datos.genero, datos.directorId, datos.calificacion, datos.comentario);
         this.idEditando = null;
         this.vista.mostrarMensaje("Película actualizada.", false);
         this.guardarYMostrar();
@@ -111,6 +133,78 @@ export class PeliculaController {
         this.criterioOrden = criterio;
         this.mostrar();
     }
+    guardarDirector(nombre, email) {
+        const limpio = nombre.trim();
+        const correo = email.trim();
+        const error = this.validarDirector(limpio, correo);
+        if (error !== "") {
+            this.vista.mostrarMensaje(error, true);
+            return;
+        }
+        if (this.idDirectorEditando === null) {
+            this.directores.addDirector(limpio, correo);
+            this.vista.mostrarMensaje("Director agregado.", false);
+        }
+        else {
+            this.directores.updateDirector(this.idDirectorEditando, limpio, correo);
+            this.idDirectorEditando = null;
+            this.vista.mostrarMensaje("Director actualizado.", false);
+        }
+        this.guardarYMostrar();
+        this.vista.limpiarFormularioDirector();
+    }
+    validarDirector(nombre, email) {
+        if (nombre === "") {
+            return "Escribe el nombre del director.";
+        }
+        if (!/^[\p{L}][\p{L}\s.'-]{1,59}$/u.test(nombre)) {
+            return "El nombre debe tener entre 2 y 60 caracteres, solo letras, espacios, puntos o guiones.";
+        }
+        if (email === "") {
+            return "Escribe un correo.";
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return "El correo no tiene un formato válido.";
+        }
+        const repetido = this.directores.getAllDirectores().some((director) => {
+            return director.nombre.toLowerCase() === nombre.toLowerCase() && director.id !== this.idDirectorEditando;
+        });
+        if (repetido) {
+            return "Ya existe un director con ese nombre.";
+        }
+        return "";
+    }
+    eliminarDirector(id) {
+        const director = this.directores.getDirectorById(id);
+        if (!director) {
+            return;
+        }
+        const asociadas = this.modelo.getAllPeliculas().filter((pelicula) => pelicula.directorId === id);
+        if (asociadas.length > 0) {
+            this.vista.mostrarMensaje("No puedes eliminar un director que tiene películas.", true);
+            return;
+        }
+        const confirmar = window.confirm(`¿Eliminar a "${director.nombre}"?`);
+        if (!confirmar) {
+            return;
+        }
+        this.directores.deleteDirector(id);
+        if (this.idDirectorEditando === id) {
+            this.idDirectorEditando = null;
+            this.vista.limpiarFormularioDirector();
+        }
+        this.guardarYMostrar();
+        this.vista.mostrarMensaje("Director eliminado.", false);
+    }
+    empezarEdicionDirector(id) {
+        const director = this.directores.getDirectorById(id);
+        if (!director) {
+            return;
+        }
+        this.idDirectorEditando = id;
+        this.vista.llenarFormularioDirector(director);
+        this.vista.mostrarMensaje("Editando director.", false);
+    }
     empezarEdicion(id) {
         const pelicula = this.modelo.getPeliculaById(id);
         if (!pelicula) {
@@ -136,8 +230,10 @@ export class PeliculaController {
         let lista = this.modelo.filterByGenero(filtros.genero);
         if (texto !== "") {
             lista = lista.filter((pelicula) => {
+                const director = this.nombreDirector(pelicula.directorId).toLowerCase();
                 return pelicula.titulo.toLowerCase().includes(texto)
-                    || pelicula.genero.toLowerCase().includes(texto);
+                    || pelicula.genero.toLowerCase().includes(texto)
+                    || director.includes(texto);
             });
         }
         if (filtros.año !== "") {
@@ -150,11 +246,28 @@ export class PeliculaController {
             lista = lista.filter((pelicula) => !pelicula.vista);
         }
         lista = this.modelo.ordenar(lista, this.criterioOrden);
-        this.vista.renderizar(lista);
-        this.vista.renderEstadisticas(this.modelo.getEstadisticas(), this.modelo.getRecomendaciones(), this.modelo.getTop5());
+        this.vista.renderizar(lista.map((pelicula) => {
+            return {
+                ...pelicula,
+                directorNombre: this.nombreDirector(pelicula.directorId)
+            };
+        }));
+        this.vista.llenarSelectDirectores(this.directores.getAllDirectores());
+        this.vista.renderDirectores(this.directores.getAllDirectores().map((director) => {
+            return {
+                ...director,
+                titulos: this.modelo.getAllPeliculas()
+                    .filter((pelicula) => pelicula.directorId === director.id)
+                    .map((pelicula) => pelicula.titulo)
+            };
+        }));
+        this.vista.renderEstadisticas(this.modelo.getEstadisticas(), this.modelo.getRecomendaciones(), this.modelo.getTop5(), this.directores.getAllDirectores().length);
+    }
+    nombreDirector(id) {
+        return this.directores.getDirectorById(id)?.nombre ?? "Sin director";
     }
     guardarYMostrar() {
-        this.storage.guardar(this.modelo.getAllPeliculas());
+        this.storage.guardar(this.modelo.getAllPeliculas(), this.directores.getAllDirectores());
         this.mostrar();
     }
 }

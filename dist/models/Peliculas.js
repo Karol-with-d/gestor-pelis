@@ -1,12 +1,13 @@
 export class PeliculaModel {
     peliculas = [];
     currentId = 1;
-    addPelicula(titulo, año, genero, vista, calificacion, comentario) {
+    addPelicula(titulo, año, genero, directorId, vista, calificacion, comentario) {
         const newPelicula = {
             id: this.currentId++,
             titulo,
             año,
             genero,
+            directorId,
             vista,
             calificacion,
             comentario
@@ -20,12 +21,13 @@ export class PeliculaModel {
     getPeliculaById(id) {
         return this.peliculas.find((pelicula) => pelicula.id === id);
     }
-    updatePelicula(id, titulo, año, genero, calificacion, comentario) {
+    updatePelicula(id, titulo, año, genero, directorId, calificacion, comentario) {
         const pelicula = this.getPeliculaById(id);
         if (pelicula) {
             pelicula.titulo = titulo;
             pelicula.año = año;
             pelicula.genero = genero;
+            pelicula.directorId = directorId;
             pelicula.calificacion = calificacion;
             pelicula.comentario = comentario;
         }
@@ -89,6 +91,7 @@ export class PeliculaModel {
                 titulo: pelicula.titulo,
                 año: pelicula.año,
                 genero: pelicula.genero,
+                directorId: typeof pelicula.directorId === "number" ? pelicula.directorId : 0,
                 vista: pelicula.vista,
                 calificacion: pelicula.calificacion ?? 0,
                 comentario: pelicula.comentario ?? ""

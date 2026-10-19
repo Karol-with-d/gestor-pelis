@@ -4,17 +4,18 @@ Aplicación web para llevar una colección personal de películas.
 
 ## Funcionalidades
 
-- Agregar películas con título, año, género, calificación (1 a 5 estrellas) y comentario.
-- Editar una película y cancelar la edición.
-- Eliminar una película, con confirmación.
+- Registrar directores y películas relacionadas: cada película pertenece a un director.
+- Agregar, editar y eliminar directores y películas. Un director con películas no se puede eliminar.
 - Marcar cada película como vista o pendiente.
-- Buscar por título o género.
+- Buscar por título, género o director.
 - Filtrar por género, año y estado (vistas o pendientes).
 - Ordenar por título, año o calificación.
-- Ver estadísticas: total, vistas, pendientes y promedio de calificación.
+- Cambiar entre las pestañas Películas, Directores y Resumen.
+- Ver estadísticas: total, vistas, pendientes, promedio y cantidad de directores.
 - Ver recomendaciones (películas con 4 o 5 estrellas) y un top 5.
-- Validar título, año (1888–2100), género, calificación y títulos repetidos.
-- Conservar la colección en `localStorage` al recargar la página.
+- Validar título, año (1888–2100), género, director, calificación, títulos repetidos, el formato del nombre y el correo del director.
+- Avisar el resultado con una notificación que se cierra sola.
+- Conservar películas y directores en `localStorage` al recargar la página.
 
 ## Cómo ejecutarlo
 

@@ -4,83 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Películas</title>
-    <link rel="stylesheet" href="src/styles/styles.css">
+    <link rel="stylesheet" href="src/Styles/styles.css">
 </head>
 <body>
     <main class="pagina">
         <h1>Gestor de Películas</h1>
-        <p class="descripcion">Aplicación para gestionar una colección personal de películas.</p>
+        <p class="descripcion">Colección de películas relacionadas con sus directores.</p>
 
-        <form id="form-pelicula" class="formulario">
-            <label>Título
-                <input id="titulo" type="text" placeholder="Título" maxlength="80" required>
-            </label>
-            <label>Año
-                <input id="anio" type="number" placeholder="Año" min="1888" max="2100" required>
-            </label>
-            <label>Género
-            <select id="genero" required>
-                <option value="">Género</option>
-                <option value="Acción">Acción</option>
-                <option value="Comedia">Comedia</option>
-                <option value="Drama">Drama</option>
-                <option value="Terror">Terror</option>
-                <option value="Ciencia ficción">Ciencia ficción</option>
-                <option value="Romance">Romance</option>
-                <option value="Animación">Animación</option>
-            </select>
-            </label>
-            <label>Calificación
-            <select id="calificacion" required>
-                <option value="">Calificación</option>
-                <option value="1">1 estrella</option>
-                <option value="2">2 estrellas</option>
-                <option value="3">3 estrellas</option>
-                <option value="4">4 estrellas</option>
-                <option value="5">5 estrellas</option>
-            </select>
-            </label>
-            <label class="comentario-campo">Comentario
-                <input id="comentario" type="text" placeholder="Comentario" maxlength="200">
-            </label>
-            <div class="acciones">
-                <button id="btn-guardar" type="submit">Agregar</button>
-                <button id="btn-cancelar" class="secundario" type="button" hidden>Cancelar</button>
+        <nav class="pestanas" aria-label="Vistas">
+            <button type="button" class="pestana activa" data-vista="peliculas" aria-selected="true">Películas</button>
+            <button type="button" class="pestana" data-vista="directores" aria-selected="false">Directores</button>
+            <button type="button" class="pestana" data-vista="resumen" aria-selected="false">Resumen</button>
+        </nav>
+
+        <section id="vista-peliculas" class="vista-panel" data-vista="peliculas">
+            <form id="form-pelicula" class="formulario">
+                <label>Título
+                    <input id="titulo" type="text" placeholder="Título" maxlength="80" required>
+                </label>
+                <label>Año
+                    <input id="anio" type="number" placeholder="Año" min="1888" max="2100" required>
+                </label>
+                <label>Género
+                    <select id="genero" required>
+                        <option value="">Género</option>
+                        <option value="Acción">Acción</option>
+                        <option value="Comedia">Comedia</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Terror">Terror</option>
+                        <option value="Ciencia ficción">Ciencia ficción</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Animación">Animación</option>
+                    </select>
+                </label>
+                <label>Director
+                    <select id="director">
+                        <option value="">Director</option>
+                    </select>
+                </label>
+                <label>Calificación
+                    <select id="calificacion" required>
+                        <option value="">Calificación</option>
+                        <option value="1">1 estrella</option>
+                        <option value="2">2 estrellas</option>
+                        <option value="3">3 estrellas</option>
+                        <option value="4">4 estrellas</option>
+                        <option value="5">5 estrellas</option>
+                    </select>
+                </label>
+                <label class="comentario-campo">Comentario
+                    <input id="comentario" type="text" placeholder="Comentario" maxlength="200">
+                </label>
+                <div class="acciones">
+                    <button id="btn-guardar" type="submit">Agregar</button>
+                    <button id="btn-cancelar" class="secundario" type="button" hidden>Cancelar</button>
+                </div>
+            </form>
+
+            <div class="filtros">
+                <input id="buscar" type="text" placeholder="Buscar por título, género o director">
+                <select id="filtro-genero">
+                    <option value="">Todos los géneros</option>
+                    <option value="Acción">Acción</option>
+                    <option value="Comedia">Comedia</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Terror">Terror</option>
+                    <option value="Ciencia ficción">Ciencia ficción</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Animación">Animación</option>
+                </select>
+                <input id="filtro-anio" type="number" placeholder="Año" min="1888" max="2100">
+                <select id="filtro-estado">
+                    <option value="">Todas</option>
+                    <option value="vista">Vistas</option>
+                    <option value="pendiente">Pendientes</option>
+                </select>
+                <select id="ordenar">
+                    <option value="">Ordenar por</option>
+                    <option value="titulo">Título</option>
+                    <option value="año">Año</option>
+                    <option value="calificacion">Calificación</option>
+                </select>
             </div>
-        </form>
 
-        <p id="mensaje"></p>
+            <section id="lista" class="lista"></section>
+        </section>
 
-        <section id="estadisticas" class="estadisticas"></section>
+        <section id="vista-directores" class="vista-panel" data-vista="directores" hidden>
+            <form id="form-director" class="formulario">
+                <label>Nombre
+                    <input id="nombre-director" type="text" placeholder="Nombre del director" maxlength="60" required>
+                </label>
+                <label>Correo
+                    <input id="email-director" type="text" placeholder="correo@ejemplo.com" maxlength="80">
+                </label>
+                <div class="acciones">
+                    <button id="btn-guardar-director" type="submit">Agregar</button>
+                    <button id="btn-cancelar-director" class="secundario" type="button" hidden>Cancelar</button>
+                </div>
+            </form>
+            <section id="lista-directores" class="lista"></section>
+        </section>
 
-        <div class="filtros">
-            <input id="buscar" type="text" placeholder="Buscar por título o género">
-            <select id="filtro-genero">
-                <option value="">Todos los géneros</option>
-                <option value="Acción">Acción</option>
-                <option value="Comedia">Comedia</option>
-                <option value="Drama">Drama</option>
-                <option value="Terror">Terror</option>
-                <option value="Ciencia ficción">Ciencia ficción</option>
-                <option value="Romance">Romance</option>
-                <option value="Animación">Animación</option>
-            </select>
-            <input id="filtro-anio" type="number" placeholder="Año" min="1888" max="2100">
-            <select id="filtro-estado">
-                <option value="">Todas</option>
-                <option value="vista">Vistas</option>
-                <option value="pendiente">Pendientes</option>
-            </select>
-            <select id="ordenar">
-                <option value="">Ordenar por</option>
-                <option value="titulo">Título</option>
-                <option value="año">Año</option>
-                <option value="calificacion">Calificación</option>
-            </select>
-        </div>
-
-        <section id="lista" class="lista"></section>
+        <section id="vista-resumen" class="vista-panel" data-vista="resumen" hidden>
+            <section id="estadisticas" class="estadisticas"></section>
+        </section>
     </main>
+
+    <p id="mensaje" role="status" aria-live="polite"></p>
 
     <script type="module" src="dist/main.js"></script>
 </body>

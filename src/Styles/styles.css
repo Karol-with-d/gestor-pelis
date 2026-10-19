@@ -134,15 +134,54 @@ button.peligro {
     font-weight: bold;
 }
 
+.pestanas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.pestana {
+    background: white;
+    color: #9d174d;
+    border: 1px solid #fbcfe8;
+}
+
+.pestana.activa {
+    background: #db2777;
+    color: white;
+}
+
+.vista-panel[hidden] {
+    display: none;
+}
+
+.director {
+    color: #6b7280;
+    margin: 4px 0;
+}
+
+.relacion {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    color: #4b5563;
+}
+
 #mensaje:empty {
     display: none;
 }
 
 .mensaje-ok,
 .mensaje-error {
-    margin: 0 0 12px;
-    padding: 10px 12px;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 20;
+    margin: 0;
+    max-width: min(360px, calc(100% - 32px));
+    padding: 12px 14px;
     border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .mensaje-ok {
@@ -171,7 +210,7 @@ button.peligro {
 
 .numeros {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 12px;
 }
 
