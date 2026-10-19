@@ -32,18 +32,6 @@ export class PeliculaView {
     private paneles: NodeListOf<HTMLElement>;
     private temporizadorMensaje: number | undefined;
 
-    public onGuardar: (datos: DatosPelicula) => void = () => {};
-    public onEliminar: (id: number) => void = () => {};
-    public onEditar: (id: number) => void = () => {};
-    public onToggle: (id: number) => void = () => {};
-    public onFiltrar: () => void = () => {};
-    public onOrdenar: (criterio: string) => void = () => {};
-    public onCancelar: () => void = () => {};
-    public onGuardarDirector: (nombre: string, email: string) => void = () => {};
-    public onEliminarDirector: (id: number) => void = () => {};
-    public onEditarDirector: (id: number) => void = () => {};
-    public onCancelarDirector: () => void = () => {};
-
     constructor() {
         this.form = document.getElementById("form-pelicula") as HTMLFormElement;
         this.titulo = document.getElementById("titulo") as HTMLInputElement;
@@ -71,50 +59,65 @@ export class PeliculaView {
         this.pestanas = document.querySelectorAll<HTMLButtonElement>(".pestana");
         this.paneles = document.querySelectorAll<HTMLElement>(".vista-panel");
 
-        this.form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            this.onGuardar(this.obtenerDatosFormulario());
-        });
-
-        this.botonCancelar.addEventListener("click", () => {
-            this.onCancelar();
-        });
-
-        this.formDirector.addEventListener("submit", (event) => {
-            event.preventDefault();
-            this.onGuardarDirector(this.nombreDirector.value, this.emailDirector.value);
-        });
-
-        this.botonCancelarDirector.addEventListener("click", () => {
-            this.onCancelarDirector();
-        });
-
-        this.buscar.addEventListener("input", () => {
-            this.onFiltrar();
-        });
-
-        this.filtroGenero.addEventListener("change", () => {
-            this.onFiltrar();
-        });
-
-        this.filtroAnio.addEventListener("input", () => {
-            this.onFiltrar();
-        });
-
-        this.filtroEstado.addEventListener("change", () => {
-            this.onFiltrar();
-        });
-
-        this.ordenar.addEventListener("change", () => {
-            this.onOrdenar(this.ordenar.value);
-        });
-
         this.pestanas.forEach((boton) => {
             boton.addEventListener("click", () => {
                 this.mostrarPestana(boton.dataset.vista ?? "peliculas");
             });
         });
+    }
 
+    public bindGuardar(handler: (datos: DatosPelicula) => void): void {
+        this.form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            handler(this.obtenerDatosFormulario());
+        });
+    }
+
+    public bindCancelar(handler: () => void): void {
+        this.botonCancelar.addEventListener("click", () => {
+            handler();
+        });
+    }
+
+    public bindGuardarDirector(handler: (nombre: string, email: string) => void): void {
+        this.formDirector.addEventListener("submit", (event) => {
+            event.preventDefault();
+            handler(this.nombreDirector.value.trim(), this.emailDirector.value.trim());
+        });
+    }
+
+    public bindCancelarDirector(handler: () => void): void {
+        this.botonCancelarDirector.addEventListener("click", () => {
+            handler();
+        });
+    }
+
+    public bindFiltrar(handler: () => void): void {
+        this.buscar.addEventListener("input", () => {
+            handler();
+        });
+        this.filtroGenero.addEventListener("change", () => {
+            handler();
+        });
+        this.filtroAnio.addEventListener("input", () => {
+            handler();
+        });
+        this.filtroEstado.addEventListener("change", () => {
+            handler();
+        });
+    }
+
+    public bindOrdenar(handler: (criterio: string) => void): void {
+        this.ordenar.addEventListener("change", () => {
+            handler(this.ordenar.value);
+        });
+    }
+
+    public bindAccionesPelicula(handlers: {
+        eliminar: (id: number) => void;
+        editar: (id: number) => void;
+        toggle: (id: number) => void;
+    }): void {
         this.lista.addEventListener("click", (event) => {
             const boton = (event.target as HTMLElement).closest("button");
             if (!boton) {
@@ -125,16 +128,21 @@ export class PeliculaView {
             const accion = boton.dataset.accion;
 
             if (accion === "eliminar") {
-                this.onEliminar(id);
+                handlers.eliminar(id);
             }
             if (accion === "editar") {
-                this.onEditar(id);
+                handlers.editar(id);
             }
             if (accion === "vista") {
-                this.onToggle(id);
+                handlers.toggle(id);
             }
         });
+    }
 
+    public bindAccionesDirector(handlers: {
+        eliminar: (id: number) => void;
+        editar: (id: number) => void;
+    }): void {
         this.listaDirectores.addEventListener("click", (event) => {
             const boton = (event.target as HTMLElement).closest("button");
             if (!boton) {
@@ -145,10 +153,10 @@ export class PeliculaView {
             const accion = boton.dataset.accion;
 
             if (accion === "eliminar-director") {
-                this.onEliminarDirector(id);
+                handlers.eliminar(id);
             }
             if (accion === "editar-director") {
-                this.onEditarDirector(id);
+                handlers.editar(id);
             }
         });
     }

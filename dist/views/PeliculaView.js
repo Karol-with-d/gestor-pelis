@@ -25,17 +25,6 @@ export class PeliculaView {
     pestanas;
     paneles;
     temporizadorMensaje;
-    onGuardar = () => { };
-    onEliminar = () => { };
-    onEditar = () => { };
-    onToggle = () => { };
-    onFiltrar = () => { };
-    onOrdenar = () => { };
-    onCancelar = () => { };
-    onGuardarDirector = () => { };
-    onEliminarDirector = () => { };
-    onEditarDirector = () => { };
-    onCancelarDirector = () => { };
     constructor() {
         this.form = document.getElementById("form-pelicula");
         this.titulo = document.getElementById("titulo");
@@ -62,40 +51,54 @@ export class PeliculaView {
         this.mensaje = document.getElementById("mensaje");
         this.pestanas = document.querySelectorAll(".pestana");
         this.paneles = document.querySelectorAll(".vista-panel");
-        this.form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            this.onGuardar(this.obtenerDatosFormulario());
-        });
-        this.botonCancelar.addEventListener("click", () => {
-            this.onCancelar();
-        });
-        this.formDirector.addEventListener("submit", (event) => {
-            event.preventDefault();
-            this.onGuardarDirector(this.nombreDirector.value, this.emailDirector.value);
-        });
-        this.botonCancelarDirector.addEventListener("click", () => {
-            this.onCancelarDirector();
-        });
-        this.buscar.addEventListener("input", () => {
-            this.onFiltrar();
-        });
-        this.filtroGenero.addEventListener("change", () => {
-            this.onFiltrar();
-        });
-        this.filtroAnio.addEventListener("input", () => {
-            this.onFiltrar();
-        });
-        this.filtroEstado.addEventListener("change", () => {
-            this.onFiltrar();
-        });
-        this.ordenar.addEventListener("change", () => {
-            this.onOrdenar(this.ordenar.value);
-        });
         this.pestanas.forEach((boton) => {
             boton.addEventListener("click", () => {
                 this.mostrarPestana(boton.dataset.vista ?? "peliculas");
             });
         });
+    }
+    bindGuardar(handler) {
+        this.form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            handler(this.obtenerDatosFormulario());
+        });
+    }
+    bindCancelar(handler) {
+        this.botonCancelar.addEventListener("click", () => {
+            handler();
+        });
+    }
+    bindGuardarDirector(handler) {
+        this.formDirector.addEventListener("submit", (event) => {
+            event.preventDefault();
+            handler(this.nombreDirector.value.trim(), this.emailDirector.value.trim());
+        });
+    }
+    bindCancelarDirector(handler) {
+        this.botonCancelarDirector.addEventListener("click", () => {
+            handler();
+        });
+    }
+    bindFiltrar(handler) {
+        this.buscar.addEventListener("input", () => {
+            handler();
+        });
+        this.filtroGenero.addEventListener("change", () => {
+            handler();
+        });
+        this.filtroAnio.addEventListener("input", () => {
+            handler();
+        });
+        this.filtroEstado.addEventListener("change", () => {
+            handler();
+        });
+    }
+    bindOrdenar(handler) {
+        this.ordenar.addEventListener("change", () => {
+            handler(this.ordenar.value);
+        });
+    }
+    bindAccionesPelicula(handlers) {
         this.lista.addEventListener("click", (event) => {
             const boton = event.target.closest("button");
             if (!boton) {
@@ -104,15 +107,17 @@ export class PeliculaView {
             const id = Number(boton.dataset.id);
             const accion = boton.dataset.accion;
             if (accion === "eliminar") {
-                this.onEliminar(id);
+                handlers.eliminar(id);
             }
             if (accion === "editar") {
-                this.onEditar(id);
+                handlers.editar(id);
             }
             if (accion === "vista") {
-                this.onToggle(id);
+                handlers.toggle(id);
             }
         });
+    }
+    bindAccionesDirector(handlers) {
         this.listaDirectores.addEventListener("click", (event) => {
             const boton = event.target.closest("button");
             if (!boton) {
@@ -121,10 +126,10 @@ export class PeliculaView {
             const id = Number(boton.dataset.id);
             const accion = boton.dataset.accion;
             if (accion === "eliminar-director") {
-                this.onEliminarDirector(id);
+                handlers.eliminar(id);
             }
             if (accion === "editar-director") {
-                this.onEditarDirector(id);
+                handlers.editar(id);
             }
         });
     }

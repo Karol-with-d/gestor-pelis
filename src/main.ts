@@ -4,10 +4,12 @@ import { PeliculaModel } from "./models/Peliculas.js";
 import { StorageService } from "./services/StorageService.js";
 import { PeliculaView } from "./views/PeliculaView.js";
 
-const modelo = new PeliculaModel();
-const directores = new DirectorModel();
-const storage = new StorageService();
-const vista = new PeliculaView();
-const controller = new PeliculaController(modelo, directores, vista, storage);
+document.addEventListener("DOMContentLoaded", () => {
+    const modelo = new PeliculaModel();
+    const directores = new DirectorModel();
+    const storage = new StorageService();
+    const vista = new PeliculaView();
+    const controller = new PeliculaController(modelo, directores, vista, storage);
 
-controller.iniciar();
+    console.log("Aplicación MVC iniciada correctamente");
+});

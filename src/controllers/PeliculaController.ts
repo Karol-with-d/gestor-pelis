@@ -13,64 +13,44 @@ export class PeliculaController {
         private directores: DirectorModel,
         private vista: PeliculaView,
         private storage: StorageService
-    ) {}
+    ) {
+        this.init();
+    }
 
-    public iniciar(): void {
+    private init(): void {
         const guardadas = this.storage.obtener();
         this.modelo.cargarPeliculas(guardadas.peliculas);
         this.directores.cargarDirectores(guardadas.directores);
-        this.conectarEventos();
+
+        this.vista.bindGuardar(this.guardar.bind(this));
+        this.vista.bindCancelar(this.cancelarEdicion.bind(this));
+        this.vista.bindAccionesPelicula({
+            eliminar: this.handleDelete.bind(this),
+            editar: this.empezarEdicion.bind(this),
+            toggle: this.cambiarVista.bind(this)
+        });
+        this.vista.bindFiltrar(this.mostrar.bind(this));
+        this.vista.bindOrdenar(this.handleSort.bind(this));
+        this.vista.bindGuardarDirector(this.guardarDirector.bind(this));
+        this.vista.bindCancelarDirector(this.cancelarEdicionDirector.bind(this));
+        this.vista.bindAccionesDirector({
+            eliminar: this.eliminarDirector.bind(this),
+            editar: this.empezarEdicionDirector.bind(this)
+        });
+
         this.mostrar();
     }
 
-    private conectarEventos(): void {
-        this.vista.onGuardar = (datos) => {
-            this.guardar(datos);
-        };
+    private cancelarEdicion(): void {
+        this.idEditando = null;
+        this.vista.limpiarFormulario();
+        this.vista.mostrarMensaje("Edición cancelada.", false);
+    }
 
-        this.vista.onEliminar = (id) => {
-            this.handleDelete(id);
-        };
-
-        this.vista.onEditar = (id) => {
-            this.empezarEdicion(id);
-        };
-
-        this.vista.onToggle = (id) => {
-            this.cambiarVista(id);
-        };
-
-        this.vista.onFiltrar = () => {
-            this.mostrar();
-        };
-
-        this.vista.onOrdenar = (criterio) => {
-            this.handleSort(criterio);
-        };
-
-        this.vista.onCancelar = () => {
-            this.idEditando = null;
-            this.vista.limpiarFormulario();
-            this.vista.mostrarMensaje("Edición cancelada.", false);
-        };
-
-        this.vista.onGuardarDirector = (nombre, email) => {
-            this.guardarDirector(nombre, email);
-        };
-
-        this.vista.onEliminarDirector = (id) => {
-            this.eliminarDirector(id);
-        };
-
-        this.vista.onEditarDirector = (id) => {
-            this.empezarEdicionDirector(id);
-        };
-
-        this.vista.onCancelarDirector = () => {
-            this.idDirectorEditando = null;
-            this.vista.limpiarFormularioDirector();
-            this.vista.mostrarMensaje("Edición cancelada.", false);
-        };
+    private cancelarEdicionDirector(): void {
+        this.idDirectorEditando = null;
+        this.vista.limpiarFormularioDirector();
+        this.vista.mostrarMensaje("Edición cancelada.", false);
     }
 
     private guardar(datos: DatosPelicula): void {
